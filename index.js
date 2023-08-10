@@ -9,6 +9,8 @@ const app = express();
 /* Puerto donde correrá el server */
 const port = 6969;
 
+app.use(express.json())
+
 /* Utilización del método get en la ruta fuente '/' 
 
   El método get de expressjs necesita que se le pase una
