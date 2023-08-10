@@ -38,11 +38,21 @@ router.get('/', (req, res)=>{
   
   router.get('/:id', (req, res)=>{
     const {id} = req.params;
-    res.json({
-      productId: id,
-      name: 'uwu',
-      price: 2000
-    })
+
+    if(parseInt(id) === 999){
+
+      res.status(404).json({
+        message: "Not Found"
+      })
+
+    }else{
+      res.status(200).json({
+        productId: id,
+        name: 'uwu',
+        price: 2000
+      })
+    }
+    
   });
   
 
@@ -51,7 +61,7 @@ router.get('/', (req, res)=>{
 router.post('/', (req, res)=>{
   const body = req.body;
 
-  res.json({
+  res.status(201).json({
     message: "Creation",
     data: body
   })
