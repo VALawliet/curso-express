@@ -12,47 +12,81 @@ router.get('/', async (req, res)=>{
 
   res.json(products)
 })
-  
-  router.get('/filter', (req, res)=>{
-    res.send('yo soy un filter');
-  })
-  
-  router.get('/:id', (req, res)=>{
+
+  router.get('/:id', async (req, res)=>{
     const {id} = req.params;
 
-    const product = service.findOne(id);
-    res.json(product);
-    
+    try{
+      const product = await service.findOne(id);
+      res.json(product);
+    }catch(err){
+      res.status(404).json({
+        error: err.message
+      })
+    }
+
+
   });
-  
 
 
 
-router.post('/', (req, res)=>{
-  const body = req.body;
 
-  const newProduct = service.create(body);
+router.post('/', async (req, res)=>{
+
+  try{
+
+    const body = req.body;
+
+    const newProduct = await service.create(body);
 
 
-  res.status(201).json(newProduct)
-});7
+    res.status(201).json(newProduct);
+  }catch(err){
 
-router.patch('/:id', (req, res)=>{
-  const bodyPatch = req.body;
-  const { id } = req.params;
+    res.status(403).json({
+      error: err.message})
 
-  let updatedResponse = service.update(id, bodyPatch);
+  }
 
-  res.json(updatedResponse)
+
+
+});
+
+router.patch('/:id', async (req, res)=>{
+  try{
+
+    const bodyPatch = req.body;
+    const { id } = req.params;
+
+    let updatedResponse = await service.update(id, bodyPatch);
+
+    res.json(updatedResponse)
+
+  }catch(err){
+
+    res.status(404).json({
+      error: err.message
+    })
+  }
+
 })
 
-router.delete('/:id', (req, res)=>{
-  const { id } = req.params;
+router.delete('/:id', async (req, res)=>{
 
-  
+  try{
+    const { id } = req.params;
 
-  let confirmation = service.delete(id);
 
-  res.json(confirmation);
+
+    let confirmation = await service.delete(id);
+
+    res.json(confirmation);
+  }catch(err){
+
+    res.status(404).json({
+      error: err.message
+    })
+  }
+
 })
 module.exports = router;

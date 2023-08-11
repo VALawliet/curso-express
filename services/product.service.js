@@ -12,7 +12,7 @@ class ProductsService{
 
         for(let index = 0; index < limit; index++){
             this.products.push({
-                
+
                 id: faker.string.uuid(),
               name: faker.commerce.productName(),
               price: parseInt(faker.commerce.price(), 10),
@@ -23,27 +23,37 @@ class ProductsService{
 
     create(body){
 
-        let newID = faker.string.uuid();
-        let newProduct = {
+      return new Promise((resolve, reject)=>{
+        setTimeout(() => {
 
-            id: newID,
-            name: body.name,
-            price: body.price,
-            image: body.image
-        }
+          if(body.name != 'Uwu'){
+            let newID = faker.string.uuid();
+            let newProduct = {
 
-        this.products.push(newProduct);
+                id: newID,
+                name: body.name,
+                price: body.price,
+                image: body.image
+            }
 
-        return {
-            message: "Created",
+            this.products.push(newProduct);
 
-            product: newProduct
-        }
+            resolve(this.products);
+
+          }else{
+
+            reject(new Error('Uwus are not allowed, you bitchless ass mf'));
+
+          }
+
+        }, 4000);
+      })
+
 
     }
 
     find(){
-        
+
         return new Promise((resolve, reject)=>{
             setTimeout(()=>{
                 resolve(this.products);
@@ -53,49 +63,100 @@ class ProductsService{
 
     findOne(id){
 
-        return this.products.find((item)=>{
-            return item.id === id
+        return new Promise((resolve, reject)=>{
+
+          setTimeout(()=>{
+
+            const findingProduct = this.products.findIndex((element)=>{
+              return element.id === id;
+            });
+
+            if(findingProduct != -1){
+              resolve(this.products[findingProduct]);
+
+            }else{
+
+              reject(new Error("It has not been found"));
+            }
+
+          }, 4000)
+
+
         })
-        
+
 
     }
 
     update(idToUpdate, body){
 
+      return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          let isItEvenThere = this.products.findIndex((element)=>{
+            return element.id == idToUpdate;
+          });
 
-        let updatedList = this.products.map((element)=>{
+          if(isItEvenThere != -1){
+              let updatedList = this.products.map((element)=>{
 
-            if(element.id == idToUpdate){
-                element.name = body.name || element.name;
-                element.price = body.price || element.price;
-                element.image = body.image || element.image
-            }
+                if(element.id == idToUpdate){
+                    element.name = body.name || element.name;
+                    element.price = body.price || element.price;
+                    element.image = body.image || element.image
+                }
 
-            return element
-        });
+                return element
+              });
 
-        this.products = updatedList;
+              this.products = updatedList;
 
-        return {
-            message: "updated"
-        }
+              resolve({
+                message: "updated"
+            })
+          }else{
+
+            reject(new Error('No such product'))
+          }
+
+        }, 4000)
+      })
+
+
+
 
     }
 
     delete(idDelete){
 
-        
-        let newListOfProducts = this.products.filter((product)=>{
-            return product.id != idDelete;
+
+        return new Promise((resolve, reject)=>{
+          setTimeout(() => {
+
+              let isItEvenThere = this.products.findIndex((element)=>{
+                return element.id == idDelete
+              });
+
+              if(isItEvenThere != -1){
+
+                  let newListOfProducts = this.products.filter((product)=>{
+                    return product.id != idDelete;
+                  })
+
+                  this.products = newListOfProducts;
+
+
+
+                resolve({
+                  message: "deleted"
+                });
+
+              }else{
+
+                reject(new Error("No such product"));
+              }
+
+          }, 4000);
         })
 
-        this.products = newListOfProducts;
-
-        
-
-        return {
-            message: "deleted"
-        }
 
 
     }
