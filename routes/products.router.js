@@ -1,36 +1,17 @@
 const express = require('express');
-const {faker} = require('@faker-js/faker');
+const  ProductsService = require('./../services/product.service.js');
+
 
 
 const router = express.Router();
+const service = new ProductsService()
 
 router.get('/', (req, res)=>{
 
-    /* Con req.query accedemos a los parámetros especiales que
-    se ponen en las urls al momento de querer realizar una petición.
-    Esto se vería así en el navegador:
-    
-    http://localhost:6969/products?size=100      
-    */
-    const proudctos = [];
-    const { size } = req.query;
-  
-    /* Se le da el valor de la variable size a limit u
-    otro valor por defecto */
-    const limit = size || 10
-  
-    /* Finalmente se crean una cantidad de productos que dependen
-    de limit para darselo como respuesta al cliente*/
-    for(let index = 0; index < limit; index++){
-      proudctos.push({
-        name: faker.commerce.productName(),
-        price: parseInt(faker.commerce.price(), 10),
-        image: faker.image.url()
-      })
-    }
-  
-    res.json(proudctos)
-  })
+  const products = service.find()
+
+  res.json(products)
+})
   
   router.get('/filter', (req, res)=>{
     res.send('yo soy un filter');
@@ -39,19 +20,8 @@ router.get('/', (req, res)=>{
   router.get('/:id', (req, res)=>{
     const {id} = req.params;
 
-    if(parseInt(id) === 999){
-
-      res.status(404).json({
-        message: "Not Found"
-      })
-
-    }else{
-      res.status(200).json({
-        productId: id,
-        name: 'uwu',
-        price: 2000
-      })
-    }
+    const product = service.findOne(id);
+    res.json(product);
     
   });
   
@@ -61,29 +31,28 @@ router.get('/', (req, res)=>{
 router.post('/', (req, res)=>{
   const body = req.body;
 
-  res.status(201).json({
-    message: "Creation",
-    data: body
-  })
+  const newProduct = service.create(body);
+
+
+  res.status(201).json(newProduct)
 });7
 
 router.patch('/:id', (req, res)=>{
   const bodyPatch = req.body;
   const { id } = req.params;
 
-  res.json({
-    message: 'Updated',
-    data: bodyPatch,
-    id
-  })
+  let updatedResponse = service.update(id, bodyPatch);
+
+  res.json(updatedResponse)
 })
 
 router.delete('/:id', (req, res)=>{
-  const { idDelete } = req.params;
+  const { id } = req.params;
 
-  res.json({
-    message: 'deleted',
-    idDelete
-  })
+  
+
+  let confirmation = service.delete(id);
+
+  res.json(confirmation);
 })
 module.exports = router;

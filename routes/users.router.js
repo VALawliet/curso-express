@@ -1,21 +1,54 @@
 const express = require('express');
-const { faker } = require('@faker-js/faker');
+const UsersService = require('./../services/users.services.js');
+
 
 const router = express.Router();
+const service = new UsersService()
 
 router.get('/', (req, res)=>{
      
-    const {size} = req.query;
-    let listUsers = [];
-    let limit = size || 10;
+    let response = service.find();
 
-    for(let i = 0; i < limit; i++){
+    res.json(response);
+});
 
-        listUsers.push(faker.person.fullName());
+router.get('/:id', (req, res)=>{
 
-    }
+    const { id } = req.params;
 
-    res.json(listUsers);
+    let response = service.findOne(id);
+
+    res.json(response);
+});
+
+router.post('/', (req, res)=>{
+
+    let body = req.body;
+
+    let response = service.create(body);
+
+    res.json(response);
+
+})
+
+router.patch('/:id', (req, res)=>{
+
+    const { id } = req.params;
+
+    const bodyPatch = req.body;
+
+    let response = service.update(id, bodyPatch);
+
+    res.json(response);
+});
+
+router.delete('/:id', (req, res)=>{
+
+    const { id } = req.params;
+
+    let response = service.delete(id);
+
+    res.json(response)
 })
 
 module.exports = router
