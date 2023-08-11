@@ -6,47 +6,91 @@ const CategoriesService = require('./../services/categories.service.js');
 const router = express.Router();
 const service = new CategoriesService();
 
-router.get('/', (req, res)=>{
+router.get('/', async (req, res)=>{
 
-    let categories = service.find();
-    res.json(categories);
-})
+    try{
+        let categories = await service.find();
+        res.json(categories);
+    }catch(err){
 
-router.get('/:id', (req, res)=>{
-
-    const { id } = req.params;
-
-    let category = service.findOne(id)
-
-    res.json(category);
-})
-
-router.post('/', (req, res)=>{
+        res.json({
+            error: err.message
+        })
+    }
     
-    const bodyPost = req.body;
+})
 
-    let confirmacion = service.create(bodyPost);
+router.get('/:id', async (req, res)=>{
 
-    res.status(201).json(confirmacion);
+    try{
+        const { id } = req.params;
+
+        let category = await service.findOne(id)
+
+        res.json(category);
+    }catch(err){
+        res.json({
+            error: err.message
+        })
+    }
+
+    
+})
+
+router.post('/', async (req, res)=>{
+
+    try{
+
+        const bodyPost = req.body;
+
+        let confirmacion = await service.create(bodyPost);
+
+        res.status(201).json(confirmacion);
+    }catch(err){
+
+        res.status(403).json({
+            error: err.message
+        })
+    }
+    
+    
 });
 
 
-router.patch('/:id', (req, res)=>{
+router.patch('/:id', async (req, res)=>{
 
-    const { id } = req.params;
+    try{
+        const { id } = req.params;
 
-    const bodyPatch = req.body;
+        const bodyPatch = req.body;
 
-    let confirmation = service.update(id, bodyPatch);
+        let confirmation = await service.update(id, bodyPatch);
 
-    res.json(confirmation)
+        res.json(confirmation)
+    
+    }catch(err){
+
+        res.status(404).json({
+            message: err.message
+        })
+    }
+    
 })
 
-router.delete('/:id', (req, res)=>{
-    const { id } = req.params;
+router.delete('/:id', async(req, res)=>{
 
-    let confirmacion = service.delete(id);
+    try{
+        const { id } = req.params;
 
-    res.json(confirmacion);
+        let confirmacion = await service.delete(id);
+
+        res.json(confirmacion);
+    }catch(err){
+        
+        res.status(404).json({
+            message: err.message
+        })
+    }
+    
 })
 module.exports = router
