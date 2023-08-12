@@ -13,16 +13,14 @@ router.get('/', async (req, res)=>{
   res.json(products)
 })
 
-  router.get('/:id', async (req, res)=>{
+  router.get('/:id', async (req, res, next)=>{
     const {id} = req.params;
 
     try{
       const product = await service.findOne(id);
       res.json(product);
     }catch(err){
-      res.status(404).json({
-        error: err.message
-      })
+      next(err)
     }
 
 
@@ -31,7 +29,7 @@ router.get('/', async (req, res)=>{
 
 
 
-router.post('/', async (req, res)=>{
+router.post('/', async (error, req, res, next)=>{
 
   try{
 
@@ -43,8 +41,7 @@ router.post('/', async (req, res)=>{
     res.status(201).json(newProduct);
   }catch(err){
 
-    res.status(403).json({
-      error: err.message})
+    next(err)
 
   }
 
@@ -52,7 +49,7 @@ router.post('/', async (req, res)=>{
 
 });
 
-router.patch('/:id', async (req, res)=>{
+router.patch('/:id', async (req, res, next)=>{
   try{
 
     const bodyPatch = req.body;
@@ -64,14 +61,12 @@ router.patch('/:id', async (req, res)=>{
 
   }catch(err){
 
-    res.status(404).json({
-      error: err.message
-    })
+    next(err)
   }
 
 })
 
-router.delete('/:id', async (req, res)=>{
+router.delete('/:id', async (req, res, next)=>{
 
   try{
     const { id } = req.params;
@@ -83,9 +78,7 @@ router.delete('/:id', async (req, res)=>{
     res.json(confirmation);
   }catch(err){
 
-    res.status(404).json({
-      error: err.message
-    })
+    next(err)
   }
 
 })

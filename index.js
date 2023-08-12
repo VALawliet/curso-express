@@ -2,6 +2,7 @@
 
 const express = require('express');
 const routerApi = require('./routes/index');
+const {logErrors, errorHandler, boomErrorHandler } = require('./middlewares/error.handler.js');
 
 /* Creación del server */
 const app = express();
@@ -32,6 +33,13 @@ app.get('/nueva-ruta', (req, res)=>{
 });
 
 routerApi(app);
+
+
+app.use(logErrors);
+app.use(boomErrorHandler);
+app.use(errorHandler);
+
+
 
 /* app.get('/home', (req, res)=>{
   res.send('Acá se debería cargar html, js y css');

@@ -1,4 +1,5 @@
 const {faker} = require('@faker-js/faker')
+const boom = require('@hapi/boom')
 
 class ProductsService{
 
@@ -16,7 +17,8 @@ class ProductsService{
                 id: faker.string.uuid(),
               name: faker.commerce.productName(),
               price: parseInt(faker.commerce.price(), 10),
-              image: faker.image.url()
+              image: faker.image.url(),
+              isBlocked: faker.datatype.boolean()
             })
         }
     }
@@ -42,7 +44,7 @@ class ProductsService{
 
           }else{
 
-            reject(new Error('Uwus are not allowed, you bitchless ass mf'));
+            reject(boom.forbidden('Uwus are not allowed, you bitchless ass mf'));
 
           }
 
@@ -56,6 +58,8 @@ class ProductsService{
 
         return new Promise((resolve, reject)=>{
             setTimeout(()=>{
+
+                
                 resolve(this.products);
             }, 5000);
         })
@@ -72,11 +76,16 @@ class ProductsService{
             });
 
             if(findingProduct != -1){
-              resolve(this.products[findingProduct]);
+              if(this.products[findingProduct].isBlocked){
+                reject(boom.forbidden('Cant show you this product'))
+              }else{
+                resolve(this.products[findingProduct]);
+              }
+              
 
             }else{
 
-              reject(new Error("It has not been found"));
+              reject(boom.notFound('Product not found'));
             }
 
           }, 4000)
@@ -95,27 +104,38 @@ class ProductsService{
             return element.id == idToUpdate;
           });
 
-          if(isItEvenThere != -1){
-              let updatedList = this.products.map((element)=>{
+          if(this.products[isItEvenThere].isBlocked){
 
-                if(element.id == idToUpdate){
-                    element.name = body.name || element.name;
-                    element.price = body.price || element.price;
-                    element.image = body.image || element.image
-                }
-
-                return element
-              });
-
-              this.products = updatedList;
-
-              resolve({
-                message: "updated"
-            })
+            reject(boom.forbidden("You can't update this product"));
           }else{
 
-            reject(new Error('No such product'))
+              if(isItEvenThere != -1){
+
+                
+                let updatedList = this.products.map((element)=>{
+
+                  if(element.id == idToUpdate){
+                      element.name = body.name || element.name;
+                      element.price = body.price || element.price;
+                      element.image = body.image || element.image
+                  }
+
+                  return element
+                });
+
+                this.products = updatedList;
+
+                resolve({
+                  message: "updated"
+                });
+
+
+            }else{
+
+              reject(boom.notFound('Product not found'))
+            }
           }
+          
 
         }, 4000)
       })
@@ -151,7 +171,7 @@ class ProductsService{
 
               }else{
 
-                reject(new Error("No such product"));
+                reject(boom.notFound('Product not found'));
               }
 
           }, 4000);
