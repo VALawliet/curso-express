@@ -3,6 +3,7 @@
 const express = require('express');
 const routerApi = require('./routes/index');
 const {logErrors, errorHandler, boomErrorHandler } = require('./middlewares/error.handler.js');
+const cors = require('cors');
 
 /* Creación del server */
 const app = express();
@@ -32,6 +33,7 @@ app.get('/nueva-ruta', (req, res)=>{
   res.send("I'm a new endpoint");
 });
 
+app.use(cors())
 routerApi(app);
 
 

@@ -104,37 +104,44 @@ class ProductsService{
             return element.id == idToUpdate;
           });
 
-          if(this.products[isItEvenThere].isBlocked){
+          if(isItEvenThere != -1){
 
-            reject(boom.forbidden("You can't update this product"));
-          }else{
+            if(this.products[isItEvenThere].isBlocked){
 
-              if(isItEvenThere != -1){
-
-                
-                let updatedList = this.products.map((element)=>{
-
-                  if(element.id == idToUpdate){
-                      element.name = body.name || element.name;
-                      element.price = body.price || element.price;
-                      element.image = body.image || element.image
-                  }
-
-                  return element
-                });
-
-                this.products = updatedList;
-
-                resolve({
-                  message: "updated"
-                });
-
-
+              reject(boom.forbidden("You can't update this product"));
             }else{
-
-              reject(boom.notFound('Product not found'))
+  
+                
+  
+                  
+                  let updatedList = this.products.map((element)=>{
+  
+                    if(element.id == idToUpdate){
+                        element.name = body.name || element.name;
+                        element.price = body.price || element.price;
+                        element.image = body.image || element.image
+                    }
+  
+                    return element
+                  });
+  
+                  this.products = updatedList;
+  
+                  resolve({
+                    message: "updated"
+                  });
+  
+  
+              
+  
+                
+              
             }
+          }else{
+            reject(boom.notFound('Product not found'))
           }
+
+          
           
 
         }, 4000)
